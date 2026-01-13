@@ -19,7 +19,11 @@ const Register = () => {
 
     const RegisterUser = async (e) => {
         e.preventDefault();
-        setError(password.current.value != confirmPassword.current.value ? 'Passwords does not match' : null)
+        if (password.current.value != confirmPassword.current.value) {
+            setError('Passwords does not match');
+            return;
+        }
+        setError(null)
 
         try {
             const response = await axios.post('http://localhost:5000/api/user/register', {
@@ -39,29 +43,32 @@ const Register = () => {
 
     return (
         <div className="login-wrapper">
-            <div>Register</div>
-            <form action={postMessage}>
-                <div className="input">
+            <div className="login-container">
+                <br /><br />
+                <div className="input-register">
                     <label>Name</label>
                     <input type='text' ref={name}></input>
                 </div>
-                <div className="input">
+                <div className="input-register">
                     <label>Username</label>
                     <input type='text' ref={userName}></input>
                 </div>
-                <div className="input">
+                <div className="input-register">
                     <label>Password</label>
                     <input type='password' ref={password}></input>
                 </div>
-                <div className="input">
+                <div className="input-register">
                     <label>Confirm Password</label>
                     <input type='password' ref={confirmPassword}></input>
                 </div>
                 {error && <p className='error-message'>{error}</p>}
-                <button onClick={RegisterUser}>Register</button>
-            </form>
-            <p>Already a member? <Link to="/login">Login</Link></p>
-        </div>
+                {!error && <br></br>}
+                <button className='login-button register-button' onClick={RegisterUser}>Register</button>
+                <div className="register-container">
+                    <p>Already a member? <Link to="/login">Login</Link></p>
+                </div>
+            </div>
+        </div >
     )
 }
 

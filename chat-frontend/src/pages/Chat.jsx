@@ -2,6 +2,8 @@ import React, { useRef } from 'react'
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client'
 import axios from 'axios';
+import './Chat.scss'
+import { logChat } from '../services/logChat';
 
 const Chat = ({ receiverId }) => {
     const [messages, setMessages] = useState([]);
@@ -43,7 +45,7 @@ const Chat = ({ receiverId }) => {
                 sender: Sender,
                 receiver: localStorage.getItem('userName')
             };
-            setMessages(messages => [...messages, chatObj])
+            setMessages(messages => [...messages, { message: chatObj.message, senderId: chatObj.sender, receiverId: chatObj.receiver }])
             logChat(chatObj);
         })
 
@@ -59,6 +61,10 @@ const Chat = ({ receiverId }) => {
         const senderId = localStorage.getItem('userName');
         const receiverId2 = receiverId;
 
+        if (messageR == "") {
+            return;
+        }
+
         socket.emit("private_message", { sender: senderId, receiver: receiverId2, message: messageR });
         const sendObj = {
             message: messageR,
@@ -70,31 +76,20 @@ const Chat = ({ receiverId }) => {
         logChat(sendObj);
     }
 
-    const logChat = async (obj) => {
-        try {
-            const response = await axios.post('http://localhost:5000/api/chat/log', obj)
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
 
     return (
-        <>
-            <div className='messages'>
-                {messages.map((msg) => (
-                    <p key={Math.floor(Math.random() * 1000)}>{msg.senderId} : {msg.message} </p>
-                ))}
+        <div className='message-wrapper'>
+            <div className="message-box">
+                <div className='messages'>
+                    {messages.slice(-10).map((msg) => (
+                        <p key={Math.floor(Math.random() * 1000)}>{msg.senderId} : {msg.message} </p>
+                    ))}
+                </div>
+                <br></br>
+                <input type='text' ref={message} id='sendMessage' placeholder='sendMessage' name='sendMessage'></input>
+                <button onClick={sendMessage}>send</button>
             </div>
-
-            {userName != null && (
-                <>
-                    <input type='text' ref={message} id='sendMessage' placeholder='sendMessage' name='sendMessage'></input>
-                    <button onClick={sendMessage}>send</button>
-                </>
-            )}
-
-        </>
+        </div>
     )
 }
 

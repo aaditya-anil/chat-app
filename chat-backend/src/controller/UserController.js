@@ -48,7 +48,7 @@ export const loginUser = async (req, res) => {
         }
 
         const user = await userModel.find({ userName: userName })
-        const isPasswordMatch = bcrypt.compare(password, user[0].password)
+        const isPasswordMatch = await bcrypt.compare(password, user[0].password)
 
         if (!isPasswordMatch) {
             return res.status(404).json({
@@ -67,6 +67,30 @@ export const loginUser = async (req, res) => {
             token: token,
             userName: userName
         })
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: error
+        })
+    }
+}
+
+export const getUser = async (req, res) => {
+    try {
+        const { userName } = req.query;
+        const user = await userModel.findOne({ userName: userName });
+
+        if (user != null) {
+            return res.status(200).json({
+                user: user.userName
+            })
+        }
+        else {
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+
     } catch (error) {
         console.error(error);
         return res.status(500).json({

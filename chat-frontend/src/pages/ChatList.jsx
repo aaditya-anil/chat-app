@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import Chat from './Chat';
+import FindUser from './FindUser';
 import { useNavigate } from 'react-router-dom';
+import './ChatList.scss'
 
 const ChatList = () => {
     const [userList, setUserList] = useState([]);
@@ -23,27 +25,28 @@ const ChatList = () => {
         <div>
             {showChat == null &&
                 <>
-                    <ul>
-                        {userList.map(x => (
-                            <li key={x} onClick={() => setShowChat(x)}>{x}</li>
-                        ))}
-                    </ul>
                     <button onClick={() => {
                         localStorage.setItem('userName', null);
                         localStorage.setItem('token', null);
                         nav('/login');
                     }}>Logout</button>
+                    <ul>
+                        {userList.map(x => (
+                            <li key={x} onClick={() => setShowChat(x)}>{x}</li>
+                        ))}
+                    </ul>
+
                 </>
             }
 
             {showChat &&
                 <>
-                    <Chat receiverId={showChat} />
                     <button onClick={() => setShowChat(null)}>Back</button>
+                    <Chat receiverId={showChat} />
                 </>
             }
 
-
+            <FindUser />
         </div>
     )
 }

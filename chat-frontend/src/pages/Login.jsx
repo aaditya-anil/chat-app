@@ -35,20 +35,32 @@ const Login = () => {
 
     return (
         <div className="login-wrapper">
-            <div>Login</div>
-            <form action={postMessage}>
-                <div className="username-input input">
-                    <label>Username</label>
-                    <input type='text' ref={userName}></input>
+            <div className="login-container">
+                <div className="login-heading-text">
+                    <br /><br />
+                    <div className="conversation-user-wrapper">
+                        <h3>Welcome back</h3>
+                        <h5>Log in to continue your conversations</h5>
+                    </div>
                 </div>
-                <div className="password-input input">
-                    <label>Password</label>
-                    <input type='password' ref={password}></input>
+                <div className="login-input-wrapper">
+                    <div className="username-input input">
+                        <label>Username</label>
+                        <input type='text' ref={userName}></input>
+                    </div>
+                    <div className="password-input input">
+                        <label>Password</label>
+                        <input type='password' ref={password}></input>
+                    </div>
+                    {error && <p className='error-message'>{error}</p>}
+                    {!error && <br />}
+                    <button className='login-button' onClick={HandleLogin}>Log In</button>
+                    <br /><br />
+                    <div className="register-container">
+                        <p>Join us now, by clicking <a href='/Register'>HERE</a></p>
+                    </div>
                 </div>
-                {error && <p className='error-message'>{error}</p>}
-                <button onClick={HandleLogin}>Log In</button>
-                <p>Join us now, by clicking <a href='/Register'>Register Now</a></p>
-            </form>
+            </div>
         </div>
     )
 }
