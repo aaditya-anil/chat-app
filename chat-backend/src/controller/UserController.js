@@ -3,6 +3,8 @@ import userModel from "../models/UserModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
+import { generateAccessToken, generateRefreshToken } from "../services/TokenService.js";
+import refreshTokenModel from "../models/RefreshTokenModel.js";
 
 dotenv.config();
 
@@ -56,17 +58,26 @@ export const loginUser = async (req, res) => {
             })
         }
 
-        const token = jwt.sign(
-            { id: user._id, userName: user.userName },
-            process.env.JWT_SECRET,
-            { expiresIn: "1d" }
-        )
+        const accessToken = generateAccessToken(user._id);
+        const refreshToken = generateRefreshToken(user._id);
+
+        await refreshTokenModel.create({
+            userid: user._id,
+            refreshToken: refreshToken
+        });
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: false, // in dev, should be changed to secure when deploying
+            sameSite: 'strict'
+        });
 
         return res.status(200).json({
             message: "user authenticated...",
-            token: token,
+            token: accessToken,
             userName: userName
-        })
+        });
+
     } catch (error) {
         console.error(error);
         return res.status(500).json({
@@ -74,6 +85,55 @@ export const loginUser = async (req, res) => {
         })
     }
 }
+
+export const refreshToken = async (req, res) => {
+    try {
+        const refreshToken = req.cookie.refreshToken;
+
+        if (!refreshToken) {
+            return res.status(401);
+        }
+
+        const payload = jwt.verify(
+            refreshToken,
+            process.env.REFRESH_TOKEN_SECRET
+        );
+
+        const tokenInDB = await refreshTokenModel.findOne({
+            userid: payload.userId,
+            refreshToken: refreshToken
+        })
+
+        if (!tokenInDB) {
+            res.status(403);
+        }
+
+        const newAccessToken = generateAccessToken(payload.userId);
+
+        res.json({
+            accessToken: newAccessToken
+        })
+    } catch (error) {
+        return res.status(500);
+    }
+}
+
+export const logoutUser = async (req, res) => {
+    try {
+        const userId = req.userId;
+
+        await refreshTokenModel.deleteMany({
+            userId: userId
+        })
+
+        res.clearCookie('refreshToken');
+
+        res.status(204);
+    } catch (error) {
+        res.status(500);
+    }
+}
+
 
 export const getUser = async (req, res) => {
     try {
