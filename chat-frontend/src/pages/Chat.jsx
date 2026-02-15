@@ -28,7 +28,7 @@ const Chat = ({ receiverId }) => {
     useEffect(() => {
         const oldMessages = async () => {
             const oldMessages = await showOldMessages();
-            setMessages(oldMessages)
+            setMessages(oldMessages || [])
 
         }
 
@@ -54,7 +54,7 @@ const Chat = ({ receiverId }) => {
         return () => {
             socket.disconnect();
         };
-    }, []);
+    }, [receiverId]);
 
     const sendMessage = () => {
         const messageR = message.current.value;
@@ -64,6 +64,7 @@ const Chat = ({ receiverId }) => {
         if (messageR == "") {
             return;
         }
+
 
         socket.emit("private_message", { sender: senderId, receiver: receiverId2, message: messageR });
         const sendObj = {
@@ -81,13 +82,13 @@ const Chat = ({ receiverId }) => {
         <div className='message-wrapper'>
             <div className="message-box">
                 <div className='messages'>
-                    {messages.slice(-10).map((msg) => (
+                    {messages.map((msg) => (
                         <p key={Math.floor(Math.random() * 1000)}>{msg.senderId} : {msg.message} </p>
                     ))}
                 </div>
-                <br></br>
-                <input type='text' ref={message} id='sendMessage' placeholder='sendMessage' name='sendMessage'></input>
-                <button onClick={sendMessage}>send</button>
+                <div className="input-field">
+                    <input type='text' ref={message} id='sendMessage' placeholder='Type a message..' name='sendMessage' onKeyDown={(e) => { if (e.key === "Enter") { sendMessage(); } }} />
+                </div>
             </div>
         </div>
     )

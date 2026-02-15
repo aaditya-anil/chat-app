@@ -1,0 +1,28 @@
+.user-chat-wrapper {
+    display: flex;
+    align-items: center;
+    font-weight: 300;
+    gap: 6px;
+
+    p {
+        font-size: 12px;
+
+
+    }
+
+    .user-name-chat {
+        width: 160px; // or max-width
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        .last-chat {
+            color: rgb(173, 173, 173);
+        }
+    }
+
+    .message-time {
+        font-weight: 200;
+        font-size: 10px;
+    }
+}

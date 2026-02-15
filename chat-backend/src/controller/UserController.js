@@ -88,7 +88,7 @@ export const loginUser = async (req, res) => {
 
 export const refreshToken = async (req, res) => {
     try {
-        const refreshToken = req.cookie.refreshToken;
+        const refreshToken = req.cookies.refreshToken;
 
         if (!refreshToken) {
             return res.status(401);
