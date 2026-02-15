@@ -5,76 +5,79 @@ import axios from 'axios';
 import './Chat.scss'
 import { logChat } from '../services/logChat';
 
-const Chat = ({ receiverId }) => {
+const Chat = ({ receiverId, socketRef }) => {
     const [messages, setMessages] = useState([]);
-    const [socket, setSocket] = useState(null);
-    const [userName, setUserName] = useState(null);
+    const [userName] = useState(localStorage.getItem('userName'));
     const message = useRef();
+    const messagesEndRef = useRef(null);
 
     const showOldMessages = async () => {
         try {
             const obj = {
-                sender: localStorage.getItem('userName'),
+                sender: userName,
                 receiver: receiverId
             }
             const response = await axios.get('http://localhost:5000/api/chat/getchat', { params: obj })
-            console.log('OLDmessages', response)
+
             return response.data.chat;
         } catch (error) {
-            console.log(error)
+            console.log(error);
+            return [];
         }
     }
 
     useEffect(() => {
-        const oldMessages = async () => {
+
+        const loadOldMessages = async () => {
             const oldMessages = await showOldMessages();
             setMessages(oldMessages || [])
 
         }
+        loadOldMessages();
 
-        const socket = io('http://localhost:5000');
-        setSocket(socket);
+        const socket = socketRef.current;
+        if (!socket) return;
 
-        setUserName(localStorage.getItem('userName'));
-        socket.emit('register_user', localStorage.getItem('userName'));
-        oldMessages();
-
-        socket.on('private_message_from_backend', ({ Sender, Message }) => {
-            const chatObj = {
-                message: Message,
-                sender: Sender,
-                receiver: localStorage.getItem('userName')
-            };
-            setMessages(messages => [...messages, { message: chatObj.message, senderId: chatObj.sender, receiverId: chatObj.receiver }])
-            logChat(chatObj);
-        })
-
-
-
-        return () => {
-            socket.disconnect();
-        };
-    }, [receiverId]);
-
-    const sendMessage = () => {
-        const messageR = message.current.value;
-        const senderId = localStorage.getItem('userName');
-        const receiverId2 = receiverId;
-
-        if (messageR == "") {
-            return;
+        const handleIncomingMessage = ({ Sender, Message }) => {
+            setMessages(prev => [
+                ...prev,
+                { message: Message, senderId: Sender, receiverId: userName }
+            ])
         }
 
+        socket.on('private_message_from_backend', handleIncomingMessage);
 
-        socket.emit("private_message", { sender: senderId, receiver: receiverId2, message: messageR });
-        const sendObj = {
-            message: messageR,
-            sender: senderId,
-            receiver: receiverId2
+        return () => {
+            socket.off('private_message_from_backend', handleIncomingMessage);
         };
 
-        setMessages(prev => [...prev, { message: messageR, senderId: senderId, receiverId: receiverId2 }])
-        logChat(sendObj);
+    }, [receiverId]);
+
+    useEffect(() => {
+        if (messages.length > 0) {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages]);
+
+
+    const sendMessage = () => {
+        const messageText = message.current.value.trim();
+        const socket = socketRef.current;
+
+
+        if (messageText == "") return;
+
+        socket.emit("private_message", { sender: userName, receiver: receiverId, message: messageText });
+
+        const chatObj = {
+            message: messageText,
+            sender: userName,
+            receiver: receiverId
+        };
+        logChat(chatObj);
+        setMessages(prev => [...prev, { message: messageText, senderId: userName, receiverId: receiverId }])
+
+        message.current.value = "";
     }
 
 
@@ -82,9 +85,16 @@ const Chat = ({ receiverId }) => {
         <div className='message-wrapper'>
             <div className="message-box">
                 <div className='messages'>
-                    {messages.map((msg) => (
-                        <p key={Math.floor(Math.random() * 1000)}>{msg.senderId} : {msg.message} </p>
-                    ))}
+                    {messages.map((msg) => {
+                        const isMyMessage = msg.senderId === userName;
+                        return (
+                            <p key={msg._id} className={isMyMessage ? "my-message" : "other-message"}>
+                                {msg.message}
+                            </p>
+                        );
+
+                    })}
+                    <div ref={messagesEndRef} />
                 </div>
                 <div className="input-field">
                     <input type='text' ref={message} id='sendMessage' placeholder='Type a message..' name='sendMessage' onKeyDown={(e) => { if (e.key === "Enter") { sendMessage(); } }} />

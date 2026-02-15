@@ -5,6 +5,7 @@
     .chat-window {
         width: 100%;
         height: 100vh;
+        min-width: 0;
 
         .User-header {
             display: flex;
@@ -21,6 +22,7 @@
         flex-direction: column;
         gap: 24px;
         border-right: 1px solid var(--lightgrey-color);
+        min-width: 0;
 
         .self-user-detail {
             display: flex;

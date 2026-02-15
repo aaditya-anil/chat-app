@@ -5,6 +5,7 @@ import FindUser from './FindUser';
 import { useNavigate } from 'react-router-dom';
 import UserChat from '../components/UserChat';
 import './ChatList.scss'
+import useSocket from '../hooks/useSocket';
 
 import { MdOutlinePersonSearch } from "react-icons/md";
 import { IoIosSettings } from "react-icons/io";
@@ -18,12 +19,14 @@ const ChatList = () => {
     const [showChat, setShowChat] = useState(null);
     const nav = useNavigate();
 
+    const userName = localStorage.getItem('userName');
+    const socketRef = useSocket(userName);
+
+
     useEffect(() => {
         const fetchChatList = async () => {
-            const userId = localStorage.getItem('userName')
-            const userList = await axios.get(`http://localhost:5000/api/chat/chatlist?userName=${userId}`);
+            const userList = await axios.get(`http://localhost:5000/api/chat/chatlist?userName=${userName}`);
             setUserList(userList.data.receivers);
-            console.log(userList)
         }
         fetchChatList();
     }, [])
@@ -43,7 +46,6 @@ const ChatList = () => {
                         {userList.map(x => (
                             <UserChat username={x} onClick={() => setShowChat(x)} />
                         ))}
-                        {console.log(showChat)}
                     </ul>
                 </div>
             </div>
@@ -54,14 +56,10 @@ const ChatList = () => {
                             <FaUserCircle size='30' />
                             <p>{showChat}</p>
                         </div>
-                        <Chat receiverId={showChat} />
+                        <Chat receiverId={showChat} socketRef={socketRef} />
                     </>
                 }
             </div>
-
-
-
-            {/*  */}
         </div >
     )
 }

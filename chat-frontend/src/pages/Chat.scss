@@ -19,6 +19,32 @@
     display: flex;
     flex-direction: column;
     padding: 12px;
+
+    .my-message {
+        align-self: flex-end;
+        background: var(--blue-color);
+        color: var(--white-color);
+        padding: 6px 8px;
+        margin-bottom: 4px;
+        border-radius: 12px;
+        max-width: 60%;
+    }
+
+    .other-message {
+        align-self: flex-start;
+        background: var(--lightblue-color);
+        padding: 6px 8px;
+        margin-bottom: 4px;
+        border-radius: 12px;
+        max-width: 60%;
+    }
+
+    .my-message,
+    .other-message {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
 }
 
 .messages>*:first-child {

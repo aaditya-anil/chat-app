@@ -55,11 +55,11 @@ export const getChat = async (req, res) => {
                 { senderId: sender, receiverId: receiver },
                 { senderId: receiver, receiverId: sender }
             ]
-        }).sort({ createdAt: -1 }).limit(10);
+        }).sort({ createdAt: -1 }).limit(100);
 
         return res.status(200).json({
-            message: "old chat FileSystemDirectoryHandle",
-            chat: msgObjects
+            message: "old chat",
+            chat: msgObjects.reverse()
         })
 
     } catch (error) {
