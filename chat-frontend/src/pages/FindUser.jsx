@@ -1,4 +1,5 @@
 import axios, { Axios } from 'axios';
+import api from '../services/api';
 import React from 'react'
 import { useRef } from 'react'
 import './Login.scss'
@@ -9,8 +10,8 @@ const FindUser = () => {
     const userId = useRef();
 
     async function searchUser() {
-        const userData = await axios.get(
-            'http://localhost:5000/api/user/getUser',
+        const userData = await api.get(
+            'user/getUser',
             {
                 params: {
                     userName: userId.current.value,

@@ -3,7 +3,7 @@ import { Link, Navigate } from 'react-router-dom'
 import './Login.scss'
 import '../App.scss'
 import { useRef, useState } from 'react'
-import axios from 'axios'
+import api from '../services/api'
 import { useNavigate } from 'react-router-dom'
 
 const Register = () => {
@@ -26,7 +26,7 @@ const Register = () => {
         setError(null)
 
         try {
-            const response = await axios.post('http://localhost:5000/api/user/register', {
+            const response = await api.post('auth/register', {
                 name: name.current.value,
                 userName: userName.current.value,
                 password: password.current.value

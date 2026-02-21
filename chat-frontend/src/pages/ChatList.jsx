@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import api from '../services/api';
 import Chat from './Chat';
 import FindUser from './FindUser';
 import { useNavigate } from 'react-router-dom';
@@ -25,11 +25,27 @@ const ChatList = () => {
 
     useEffect(() => {
         const fetchChatList = async () => {
-            const userList = await axios.get(`http://localhost:5000/api/chat/chatlist?userName=${userName}`);
+            const userList = await api.get(`chat/chatlist?userName=${userName}`);
             setUserList(userList.data.receivers);
         }
         fetchChatList();
     }, [])
+
+    const executeLogout = async () => {
+        try {
+            const logoutResponse = await api.post(`user/logout`);
+
+            localStorage.removeItem("userName");
+            localStorage.removeItem("token");
+            localStorage.removeItem("userId");
+
+            nav("/login")
+
+        } catch (err) {
+            console.log(err);
+        }
+
+    }
 
 
     return (
@@ -37,9 +53,9 @@ const ChatList = () => {
             <div className="sidepane">
                 <div className="self-user-detail">
                     <FaUserCircle size='30' />
-                    <p className='user-name'>Sarah West</p>
+                    <p className='user-name'>{userName}</p>
                     <MdOutlinePersonSearch size='20' />
-                    <RiLogoutCircleLine size='20' />
+                    <RiLogoutCircleLine size='20' onClick={executeLogout} />
                 </div>
                 <div className="chat-user-list">
                     <ul>

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import './Login.scss'
 import '../App.scss'
 import { useRef } from 'react'
-import axios from 'axios'
+import api from '../services/api'
 import { useNavigate } from 'react-router-dom'
 
 
@@ -20,7 +20,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:5000/api/user/login', {
+            const response = await api.post('auth/login', {
                 userName: userName.current.value,
                 password: password.current.value
             })

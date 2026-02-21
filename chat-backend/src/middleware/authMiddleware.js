@@ -4,8 +4,8 @@ export const authMiddleware = (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
 
-        if (!authHeader) {
-            return res.status(401);
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ message: "No token provided" });
         }
 
         const token = authHeader.split(' ')[1];
@@ -20,6 +20,6 @@ export const authMiddleware = (req, res, next) => {
         next();
 
     } catch (error) {
-        return res(500);
+        return res.status(401).send();
     }
 }

@@ -5,7 +5,9 @@ import cors from 'cors'
 import connectDatabase from './db.js'
 import userRouter from './routes/userRoute.js'
 import chatRouter from './routes/chatRoute.js'
+import authRouter from './routes/authRoute.js'
 import chatModel from './models/ChatModel.js'
+import { authMiddleware } from './middleware/authMiddleware.js'
 
 const port = 5000;
 const app = express();
@@ -26,8 +28,9 @@ app.use(cors({
 
 app.use(express.json())
 
-app.use('/api/user', userRouter);
-app.use('/api/chat', chatRouter);
+app.use('/api/user', authMiddleware, userRouter);
+app.use('/api/chat', authMiddleware, chatRouter);
+app.use('/api/auth', authRouter)
 
 server.listen(port, () => {
     console.log(`app is running on port ${port}`);

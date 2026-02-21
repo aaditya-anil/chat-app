@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client'
-import axios from 'axios';
+import api from '../services/api';
 import './Chat.scss'
 import { logChat } from '../services/logChat';
 
@@ -17,7 +17,7 @@ const Chat = ({ receiverId, socketRef }) => {
                 sender: userName,
                 receiver: receiverId
             }
-            const response = await axios.get('http://localhost:5000/api/chat/getchat', { params: obj })
+            const response = await api.get('chat/getchat', { params: obj })
 
             return response.data.chat;
         } catch (error) {
@@ -27,14 +27,6 @@ const Chat = ({ receiverId, socketRef }) => {
     }
 
     useEffect(() => {
-
-        const loadOldMessages = async () => {
-            const oldMessages = await showOldMessages();
-            setMessages(oldMessages || [])
-
-        }
-        loadOldMessages();
-
         const socket = socketRef.current;
         if (!socket) return;
 
@@ -51,7 +43,16 @@ const Chat = ({ receiverId, socketRef }) => {
             socket.off('private_message_from_backend', handleIncomingMessage);
         };
 
-    }, [receiverId]);
+    }, []);
+
+    useEffect(() => {
+        const loadOldMessages = async () => {
+            const oldMessages = await showOldMessages();
+            setMessages(oldMessages || [])
+
+        }
+        loadOldMessages();
+    }, [receiverId])
 
     useEffect(() => {
         if (messages.length > 0) {
@@ -78,6 +79,7 @@ const Chat = ({ receiverId, socketRef }) => {
         setMessages(prev => [...prev, { message: messageText, senderId: userName, receiverId: receiverId }])
 
         message.current.value = "";
+        message.current.focus();
     }
 
 
@@ -85,14 +87,17 @@ const Chat = ({ receiverId, socketRef }) => {
         <div className='message-wrapper'>
             <div className="message-box">
                 <div className='messages'>
-                    {messages.map((msg) => {
+                    {messages.map((msg, index) => {
                         const isMyMessage = msg.senderId === userName;
+
                         return (
-                            <p key={msg._id} className={isMyMessage ? "my-message" : "other-message"}>
+                            <p
+                                key={msg._id || index}
+                                className={isMyMessage ? "my-message" : "other-message"}
+                            >
                                 {msg.message}
                             </p>
                         );
-
                     })}
                     <div ref={messagesEndRef} />
                 </div>
