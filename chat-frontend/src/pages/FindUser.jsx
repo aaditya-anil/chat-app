@@ -1,4 +1,3 @@
-import axios, { Axios } from 'axios';
 import api from '../services/api';
 import React from 'react'
 import { useRef } from 'react'
@@ -6,7 +5,7 @@ import './Login.scss'
 import '../App.scss'
 import { logChat } from '../services/logChat';
 
-const FindUser = () => {
+const FindUser = ({ closeModal }) => {
     const userId = useRef();
 
     async function searchUser() {
@@ -26,13 +25,13 @@ const FindUser = () => {
             receiver: userData.data.user
         };
         logChat(helloObj)
-        window.location.reload();
+        closeModal();
     }
 
     return (
         <div>
             <input type='text' ref={userId} />
-            <button onClick={searchUser}></button>
+            <button onClick={searchUser}> Search </button>
         </div>
     )
 }

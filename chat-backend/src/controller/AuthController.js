@@ -42,15 +42,14 @@ export const loginUser = async (req, res) => {
     try {
         const { userName, password } = req.body;
 
-        const userExists = await userModel.findOne({ userName: userName });
-        if (!userExists) {
+        const user = await userModel.findOne({ userName: userName });
+        if (!user) {
             return res.status(404).json({
                 message: "invalid username/password"
             })
         }
 
-        const user = await userModel.find({ userName: userName })
-        const isPasswordMatch = await bcrypt.compare(password, user[0].password)
+        const isPasswordMatch = await bcrypt.compare(password, user.password)
 
         if (!isPasswordMatch) {
             return res.status(404).json({

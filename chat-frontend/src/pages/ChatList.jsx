@@ -17,6 +17,7 @@ import { RiLogoutCircleLine } from "react-icons/ri";
 const ChatList = () => {
     const [userList, setUserList] = useState([]);
     const [showChat, setShowChat] = useState(null);
+    const [showFindUser, setShowFindUser] = useState(false);
     const nav = useNavigate();
 
     const userName = localStorage.getItem('userName');
@@ -54,13 +55,13 @@ const ChatList = () => {
                 <div className="self-user-detail">
                     <FaUserCircle size='30' />
                     <p className='user-name'>{userName}</p>
-                    <MdOutlinePersonSearch size='20' />
+                    <MdOutlinePersonSearch size='20' onClick={() => setShowFindUser(true)} />
                     <RiLogoutCircleLine size='20' onClick={executeLogout} />
                 </div>
                 <div className="chat-user-list">
                     <ul>
                         {userList.map(x => (
-                            <UserChat username={x} onClick={() => setShowChat(x)} />
+                            <UserChat username={x} onClick={() => setShowChat(x)} key={x._id} />
                         ))}
                     </ul>
                 </div>
@@ -76,6 +77,13 @@ const ChatList = () => {
                     </>
                 }
             </div>
+            {showFindUser && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <FindUser closeModal={() => setShowFindUser(false)} />
+                    </div>
+                </div>
+            )}
         </div >
     )
 }
