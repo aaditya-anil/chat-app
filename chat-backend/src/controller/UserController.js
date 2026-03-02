@@ -28,11 +28,12 @@ export const logoutUser = async (req, res) => {
 export const getUser = async (req, res) => {
     try {
         const { userName } = req.query;
-        const user = await userModel.findOne({ userName: userName });
+        const users = await userModel.find({ userName: { $regex: userName, $options: "i" } });
+        const userNames = users.map(x => x.userName);
 
-        if (user != null) {
+        if (userNames != null) {
             return res.status(200).json({
-                user: user.userName
+                user: userNames
             })
         }
         else {

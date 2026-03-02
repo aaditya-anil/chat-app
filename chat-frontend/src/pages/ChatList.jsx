@@ -45,7 +45,17 @@ const ChatList = () => {
         } catch (err) {
             console.log(err);
         }
+    }
 
+    const addNewChat = (userName) => {
+        try {
+            if (!userList.includes(userName)) {
+                setUserList([...userList, userName]);
+            }
+            setShowChat(userName);
+        } catch (error) {
+
+        }
     }
 
 
@@ -80,7 +90,10 @@ const ChatList = () => {
             {showFindUser && (
                 <div className="modal-overlay">
                     <div className="modal">
-                        <FindUser closeModal={() => setShowFindUser(false)} />
+                        <FindUser
+                            closeModal={() => setShowFindUser(false)}
+                            addUserChat={(userName) => addNewChat(userName)}
+                        />
                     </div>
                 </div>
             )}
