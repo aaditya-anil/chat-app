@@ -29,7 +29,7 @@ export const getChatList = async (req, res) => {
 export const logChat = async (req, res) => {
     try {
         const { message, receiver, sender } = req.body;
-        chatModel.create({
+        await chatModel.create({
             message,
             senderId: sender,
             receiverId: receiver

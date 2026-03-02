@@ -1,9 +1,5 @@
-import { json } from "express";
 import userModel from "../models/UserModel.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
-import { generateAccessToken, generateRefreshToken } from "../services/TokenService.js";
 import refreshTokenModel from "../models/RefreshTokenModel.js";
 
 dotenv.config();
@@ -13,7 +9,7 @@ export const logoutUser = async (req, res) => {
         const userId = req.userId;
 
         await refreshTokenModel.deleteMany({
-            userId: userId
+            userid: userId
         })
 
         res.clearCookie('refreshToken');

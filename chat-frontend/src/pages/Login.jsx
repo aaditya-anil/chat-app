@@ -14,8 +14,6 @@ const Login = () => {
 
     const [error, setError] = useState();
 
-    useEffect(() => { }, [])
-
     const HandleLogin = async (e) => {
         e.preventDefault();
 

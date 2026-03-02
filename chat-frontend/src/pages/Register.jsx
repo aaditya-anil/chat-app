@@ -15,8 +15,6 @@ const Register = () => {
     const [error, setError] = useState();
     const navigate = useNavigate();
 
-    useEffect(() => { }, [])
-
     const RegisterUser = async (e) => {
         e.preventDefault();
         if (password.current.value != confirmPassword.current.value) {

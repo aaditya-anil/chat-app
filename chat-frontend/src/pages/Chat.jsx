@@ -1,9 +1,7 @@
 import React, { useRef } from 'react'
 import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client'
 import api from '../services/api';
 import './Chat.scss'
-import { logChat } from '../services/logChat';
 
 const Chat = ({ receiverId, socketRef }) => {
     const [messages, setMessages] = useState([]);
@@ -75,7 +73,6 @@ const Chat = ({ receiverId, socketRef }) => {
             sender: userName,
             receiver: receiverId
         };
-        logChat(chatObj);
         setMessages(prev => [...prev, { message: messageText, senderId: userName, receiverId: receiverId }])
 
         message.current.value = "";

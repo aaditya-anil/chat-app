@@ -90,7 +90,7 @@ export const refreshToken = async (req, res) => {
         const refreshToken = req.cookies.refreshToken;
 
         if (!refreshToken) {
-            return res.status(401);
+            return res.status(401).send();
         }
 
         const payload = jwt.verify(
@@ -104,7 +104,7 @@ export const refreshToken = async (req, res) => {
         })
 
         if (!tokenInDB) {
-            res.status(403);
+            res.status(403).send();
         }
 
         const newAccessToken = generateAccessToken(payload.userId);

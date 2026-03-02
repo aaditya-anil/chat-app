@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const baseURL = "http://localhost:5000/api/"
+
 const api = axios.create({
-    baseURL: "http://localhost:5000/api/",
+    baseURL,
     withCredentials: true,
 });
 
@@ -19,34 +21,36 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-    res => res,
-    async err => {
-        if (err.response?.status === 401) {
-            try {
-                const refreshToken = localStorage.get("token");
+    (res) => res,
+    async (err) => {
+        const originalRequest = err.config;
+        if (err.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
 
-                const res = await axios.post(`${baseURL}/auth/refresh`, {
-                    refreshToken
-                });
+            try {
+                const res = await axios.post(
+                    `${baseURL}auth/refresh`,
+                    {},
+                    { withCredentials: true }
+                );
 
                 const newAccessToken = res.data.accessToken;
 
                 localStorage.setItem("token", newAccessToken);
 
-                api.defaults.headers.common["Authorization"] =
-                    `Bearer ${newAccessToken}`;
-
-                originalRequest.headers["Authorization"] =
-                    `Bearer ${newAccessToken}`;
+                api.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
+                originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
 
                 return api(originalRequest);
-            } catch (err) {
+            } catch (refreshError) {
                 localStorage.clear();
                 window.location.href = "/login";
                 return Promise.reject(refreshError);
             }
         }
+
+        return Promise.reject(err);
     }
-)
+);
 
 export default api;

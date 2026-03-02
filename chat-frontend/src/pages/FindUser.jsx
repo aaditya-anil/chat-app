@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import { useRef } from 'react'
 import './Login.scss'
 import '../App.scss'
-import { logChat } from '../services/logChat';
 import { BsX } from "react-icons/bs";
 
 const FindUser = ({ closeModal, addUserChat }) => {
