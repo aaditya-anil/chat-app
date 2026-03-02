@@ -6,6 +6,7 @@ A full-stack real-time chat application built with React, Node.js, Express, Mong
 
 ## 🖥️ Screenshots
 
+![Chat App Demo](./assets/ChatApp.gif)
 ---
 
 ## ✨ Features
